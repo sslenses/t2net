@@ -25,13 +25,17 @@ class UserResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required(),
-                Forms\Components\TextInput::make('name')
-                    ->required(),
                 Forms\Components\TextInput::make('email')
                     ->label('Email Address')
                     ->email()
                     ->maxlength(255)
                     ->unique(ignoreRecord: true)
+                    ->required(),
+                Forms\Components\TextInput::make('password')
+                    ->label('Password')
+                    ->password()
+                    ->minLength(8)
+                    ->dehydrated(fn($state) => filled($state))
                     ->required(),
             ]);
     }
@@ -40,10 +44,39 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('id')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('name')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('email')
+                    ->label('Email Address')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created At')
+                    ->dateTime()
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Updated At')
+                    ->dateTime()
+                    ->sortable()
+                    ->searchable(),
             ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('created_at')
+        ->form([
+            Forms\Components\DatePicker::make('created_from')->label('Created From'),
+            Forms\Components\DatePicker::make('created_until')->label('Created Until'),
+        ])
+        ->query(function (Builder $query, array $data): Builder {
+            return $query
+                ->when($data['created_from'], fn ($q, $date) => $q->whereDate('created_at', '>=', $date))
+                ->when($data['created_until'], fn ($q, $date) => $q->whereDate('created_at', '<=', $date));
+        }),
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -66,8 +99,8 @@ class UserResource extends Resource
     {
         return [
             'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            // 'create' => Pages\CreateUser::route('/create'),
+            // 'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
 }
