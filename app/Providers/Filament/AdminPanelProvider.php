@@ -28,20 +28,21 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->brandName('T2Net Line')
-          ->colors([
-    'primary' => Color::Zinc,   // Gunakan warna netral modern
-    'success' => Color::Emerald,
-    'danger' => Color::Rose,
-    'warning' => Color::Amber,
-    'info' => Color::Sky,
-    'gray' => Color::Zinc,
-            ])
+            ->colors([
+                'primary' => Color::Zinc,   // Gunakan warna netral modern
+                'success' => Color::Emerald,
+                'danger' => Color::Rose,
+                'warning' => Color::Amber,
+                'info' => Color::Sky,
+                'gray' => Color::Zinc,
+                ])
             ->font('poppins')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->pages([
-                Pages\Dashboard::class,
-            ])
+            // ->pages([
+            //     Pages\Dashboard::class,
+            // ])
+            // ->dashboard(false) // Disable default dashboard
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
