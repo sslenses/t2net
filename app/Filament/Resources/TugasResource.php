@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TugasResource\Pages;
@@ -12,7 +11,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
-use Filament\Tables\SliedeOver;
+// use Filament\Tables\SliedeOver; // <-- Perbaiki typo ini
+use Filament\Tables\SlideOver; // <-- Ini yang benar
 
 class TugasResource extends Resource
 {
@@ -70,12 +70,14 @@ class TugasResource extends Resource
                     ->default(now()->addDays(3)) // default 3 hari dari sekarang
                     ->timezone('Asia/Jakarta')
                     ->withoutSeconds()
-                    ->displayFormat('d-m-Y H:i')
-                    ->required()
-
-                    ->displayFormat('d-m-Y')
-                    ->timezone('Asia/Jakarta')
+                    ->displayFormat('d-m-Y H:i') // Ada dua displayFormat, yang kedua akan menimpa yang pertama
                     ->required(),
+
+                // Baris ini akan menimpa displayFormat sebelumnya jika tidak dihapus
+                // ->displayFormat('d-m-Y') // <-- Hapus baris ini jika Anda ingin waktu juga terlihat
+                // ->timezone('Asia/Jakarta') // <-- Hapus baris ini jika sudah didefinisikan sebelumnya
+                // ->required(), // <-- Hapus baris ini jika sudah didefinisikan sebelumnya
+
 
                 Select::make('kategori')
                     ->label('Kategori')
@@ -104,7 +106,7 @@ class TugasResource extends Resource
         ->striped()
         ->query(
             Tugas::query()
-                ->selectRaw('*, DATE_PART(\'day\', tenggat_waktu::timestamp - CURRENT_DATE) as sisa_hari')
+                ->selectRaw('*, DATEDIFF(tenggat_waktu, CURRENT_DATE()) as sisa_hari') // <-- Perubahan di sini
         )
         ->columns([
             
@@ -121,6 +123,7 @@ class TugasResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('judul')
                     ->label('Task')
+                    ->label('Keterangan Pelanggan') // Label sudah ada di form, mungkin ini duplikat
                     ->searchable(),
                     
                 Tables\Columns\BadgeColumn::make('status')
@@ -154,7 +157,7 @@ class TugasResource extends Resource
                     ->label('Sisa Hari')
                     ->sortable()
                     ->badge()
-                    ->color(fn ($record) => $record->warna_sisa_hari), // ← pastikan ini
+                    ->color(fn ($record) => $record->warna_sisa_hari),
                     
                     
                     Tables\Columns\TextColumn::make('deskripsi')
@@ -164,7 +167,7 @@ class TugasResource extends Resource
 
                 
                     ])
-    
+        
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
