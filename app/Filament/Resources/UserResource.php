@@ -17,6 +17,8 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
+    protected static ?string $navigationGroup = 'System';
+
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
     public static function form(Form $form): Form
@@ -48,6 +50,7 @@ class UserResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
+                ->label('Nama')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')

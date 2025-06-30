@@ -17,13 +17,18 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Filament\Widgets\MyCalendarWidget;
+
 
 
 class AdminPanelProvider extends PanelProvider
 {
+    
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->sidebarCollapsibleOnDesktop()
+            ->sidebarWidth('250px')
             ->default()
             ->id('admin')
             ->path('admin')
@@ -43,13 +48,15 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
+                // Pages\Dashboard::make()->icon('heroicon-o-clipboard-document-list'),
             ])
             // ->dashboard(false) // Disable default dashboard
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
-            // ->widgets([
-            //     Widgets\AccountWidget::class,
-            //     Widgets\FilamentInfoWidget::class,
-            // ])
+            ->widgets([
+                // Widgets\AccountWidget::class,
+                // Widgets\FilamentInfoWidget::class,
+                MyCalendarWidget::class,
+            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

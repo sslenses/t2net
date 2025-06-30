@@ -18,6 +18,8 @@ class TugasResource extends Resource
 {
     protected static ?string $model = Tugas::class;
 
+    protected static ?string $navigationGroup = 'Teknis';
+
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     public static function form(Form $form): Form
@@ -123,7 +125,7 @@ class TugasResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('judul')
                     ->label('Task')
-                    ->label('Keterangan Pelanggan') // Label sudah ada di form, mungkin ini duplikat
+                    ->label('Subjek') // Label sudah ada di form, mungkin ini duplikat
                     ->searchable(),
                     
                 Tables\Columns\BadgeColumn::make('status')
@@ -151,7 +153,7 @@ class TugasResource extends Resource
                     }),
                     
                     Tables\Columns\TextColumn::make('penanggungJawab.name')
-                        ->label('By'),
+                        ->label('PIC'),
                     
                     Tables\Columns\TextColumn::make('sisa_hari')
                     ->label('Sisa Hari')
