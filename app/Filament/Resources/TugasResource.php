@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\TugasResource\Pages;
 use App\Models\Tugas;
 use App\Models\User;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -11,8 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
-// use Filament\Tables\SliedeOver; // <-- Perbaiki typo ini
-use Filament\Tables\SlideOver; // <-- Ini yang benar
+use Filament\Tables\SlideOver;
 
 class TugasResource extends Resource
 {
@@ -75,12 +75,6 @@ class TugasResource extends Resource
                     ->displayFormat('d-m-Y H:i') // Ada dua displayFormat, yang kedua akan menimpa yang pertama
                     ->required(),
 
-                // Baris ini akan menimpa displayFormat sebelumnya jika tidak dihapus
-                // ->displayFormat('d-m-Y') // <-- Hapus baris ini jika Anda ingin waktu juga terlihat
-                // ->timezone('Asia/Jakarta') // <-- Hapus baris ini jika sudah didefinisikan sebelumnya
-                // ->required(), // <-- Hapus baris ini jika sudah didefinisikan sebelumnya
-
-
                 Select::make('kategori')
                     ->label('Kategori')
                     ->options([
@@ -114,10 +108,9 @@ class TugasResource extends Resource
             
                 Tables\Columns\TextColumn::make('label_order')
                     ->label('Order')
-                    ->searchable()
-                    ->sortable()
+                    // ->searchable()
+                    // ->sortable()
                     ->hidden(),
-
                 
                 Tables\Columns\TextColumn::make('tugas_id')
                     ->label('ID')
@@ -144,32 +137,36 @@ class TugasResource extends Resource
                         5 => 'red',
                     ]),
 
-                    Tables\Columns\BadgeColumn::make('kategori')
+                Tables\Columns\BadgeColumn::make('kategori')
                     ->label('Kategori')
                     ->color(fn (string $state): string => match ($state) {
                         'mendadak' => 'danger',
                         'terjadwal' => 'success',
                         default => 'gray',
                     }),
-                    
-                    Tables\Columns\TextColumn::make('penanggungJawab.name')
-                        ->label('PIC'),
-                    
-                    Tables\Columns\TextColumn::make('sisa_hari')
+                
+                Tables\Columns\TextColumn::make('penanggungJawab.name')
+                    ->label('PIC'),
+
+                Tables\Columns\TextColumn::make('tenggat_waktu')
+                    ->label('Tenggat Waktu')
+                    ->searchable()
+                    ->dateTime('d-m-Y H:i')
+                    ->sortable()
+                    ->color(fn ($record) => $record->warna_tenggat_waktu)
+                    ->tooltip(fn ($record) => $record->tenggat_waktu->diffForHumans()),
+                
+                Tables\Columns\TextColumn::make('sisa_hari')
                     ->label('Sisa Hari')
                     ->sortable()
                     ->badge()
                     ->color(fn ($record) => $record->warna_sisa_hari),
-                    
-                    
-                    Tables\Columns\TextColumn::make('deskripsi')
-                   
+                
+                Tables\Columns\TextColumn::make('deskripsi')
                     ->searchable()
                         ->label('Deskripsi'),
-
-                
                     ])
-        
+    
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
@@ -181,6 +178,7 @@ class TugasResource extends Resource
                         'dihentikan' => 'Dihentikan',
                         'dibatalkan' => 'Dibatalkan',
                     ]),
+                    
                 Tables\Filters\SelectFilter::make('prioritas')
                     ->options([
                         1 => '1 - BTS/Link',
@@ -188,24 +186,33 @@ class TugasResource extends Resource
                         3 => '3 - Personal',
                         4 => '4 - Order',
                     ]),
+
                 Tables\Filters\SelectFilter::make('kategori')
                     ->options([
                         'mendadak' => 'Mendadak',
                         'terjadwal' => 'Terjadwal',
                     ]),
+
                 Tables\Filters\SelectFilter::make('penanggung_jawab_id')
                     ->label('Penanggung Jawab')
                     ->options(User::all()->pluck('name', 'id')),
-                Tables\Filters\SelectFilter::make('label_order')
-                    ->label('Jenis Order')
-                    ->options([
-                        'psb' => 'PSB',
-                        'survey' => 'Survey',
-                        'pengecekan error' => 'Pengecekan Error',
-                        'request' => 'Order/Request',
-                        'lain-lain' => 'Lain-lain',
-                    ]),
-                    
+
+                // Tables\Filters\SelectFilter::make('label_order')
+                //     ->label('Jenis Order')
+                //     ->options([
+                //         'psb' => 'PSB',
+                //         'survey' => 'Survey',
+                //         'pengecekan error' => 'Pengecekan Error',
+                //         'request' => 'Order/Request',
+                //         'lain-lain' => 'Lain-lain',
+                //     ]),
+
+    Tables\Filters\Filter::make('tugasHariIni')
+    ->label('Tugas Hari Ini')
+    ->query(fn ($query) => $query->whereDate('tenggat_waktu', \Carbon\Carbon::today()))
+    ->name('tugasHariIni') // ✅ WAJIB di Filament 3
+
+                                       
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

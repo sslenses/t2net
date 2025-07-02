@@ -5,7 +5,9 @@ namespace App\Filament\Widgets;
 use App\Models\MyEvent; // Menggunakan model MyEvent
 use App\Models\Tugas;   // Digunakan untuk CreateAction
 use Filament\Forms;
+use Filament\Support\RawJs;
 use Filament\Actions\CreateAction;
+use App\Filament\Resources\TugasResource; // Import TugasResource untuk URL event
 use Guava\Calendar\Widgets\CalendarWidget;
 use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
@@ -26,4 +28,17 @@ class MyCalendarWidget extends CalendarWidget
 
         return $events;
     }
+
+    
+    protected bool $dateClickEnabled = true;
+
+    public function onDateClick(array $info = []): void
+    {
+        $date = \Carbon\Carbon::parse($info['dateStr'])->format('Y-m-d');
+
+        $this->redirect(TugasResource::getUrl('index', [
+            'tableSearch' => $date,
+        ]));
+    }
+
 }

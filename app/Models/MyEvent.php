@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Guava\Calendar\Concerns\HasEvents; 
 use Guava\Calendar\Contracts\Eventable;
 use Guava\Calendar\ValueObjects\CalendarEvent;
+use App\Filament\Resources\TugasResource; // Import TugasResource untuk URL event
 
 class MyEvent extends Model implements Eventable
 {
@@ -27,6 +28,7 @@ class MyEvent extends Model implements Eventable
             ->start($this->tenggat_waktu) // Mengambil tanggal mulai dari kolom 'tenggat_waktu'
             ->end($this->tenggat_waktu)   // Mengambil tanggal akhir dari kolom 'tenggat_waktu'
             ->allDay()
+
             ->backgroundColor(match ($this->status) {
                 'terlambat' => 'red',     // Warna merah untuk 'terlambat'
                 'segera'    => 'orange',  // Warna oranye untuk 'segera'
