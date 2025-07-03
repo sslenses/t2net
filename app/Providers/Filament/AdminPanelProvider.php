@@ -33,7 +33,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName('T2Net Line')
+            ->brandName('T2NET')
+            ->favicon('images/favicon.png')
             ->colors([
                 'primary' => Color::Zinc,   // Gunakan warna netral modern
                 'success' => Color::Emerald,

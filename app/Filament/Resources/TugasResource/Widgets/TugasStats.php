@@ -13,20 +13,12 @@ class TugasStats extends BaseWidget
     protected function getCards(): array
     {
         return [
-            Card::make('Segera Ditangani', Tugas::where('status', 'segera')->count())
-                ->icon('heroicon-o-exclamation-triangle')
-                // ->description('Tugas yang harus segera ditangani')
-                 ->url(TugasResource::getUrl('index', [
-        'tableSearch' => 'segera',
-    ]))
+            Card::make('Pekerjaan Hari Ini', Tugas::whereDate('tenggat_waktu', Carbon::today())->count())
+                ->icon('heroicon-o-calendar-days')
+                ->url(TugasResource::getUrl('index') . '?tableFilters[tugasHariIni][enabled]=true&tableFilters[tugasHariIni][isActive]=true')
                 ->color('warning'),
 
-            Card::make('Total Tugas', Tugas::count())
-                // ->description('Semua tugas tercatat')
-                ->icon('heroicon-o-clipboard-document-list')
-                ->color('primary'),
-
-            Card::make('Tugas Terlambat', Tugas::whereDate('tenggat_waktu', '<', now())->count())
+            Card::make('Pekerjaan Terlambat', Tugas::whereDate('tenggat_waktu', '<', now())->count())
                 // ->description('Melewati tenggat waktu')
                 ->icon('heroicon-o-exclamation-circle')
                 ->url(TugasResource::getUrl('index', [
@@ -34,12 +26,18 @@ class TugasStats extends BaseWidget
                     ]))
                 ->color('danger'),
 
-            Card::make('Tugas Hari Ini', Tugas::whereDate('tenggat_waktu', Carbon::today())->count())
-    ->icon('heroicon-o-calendar-days')
-    ->color('warning')
-    ->url(TugasResource::getUrl('index') . '?tableFilters[tugasHariIni][enabled]=true&tableFilters[tugasHariIni][isActive]=true')
+            Card::make('Pekerjaan Selesai', Tugas::where('status', 'selesai')->count())
+                ->icon('heroicon-o-exclamation-triangle')
+                // ->description('Tugas yang harus segera ditangani')
+                ->url(TugasResource::getUrl('index', [
+                    'tableSearch' => 'selesai',
+                    ]))
+                ->color('warning'),
 
-
-        ];
+            Card::make('Total Pekerjaan', Tugas::count())
+                // ->description('Semua tugas tercatat')
+                ->icon('heroicon-o-clipboard-document-list')
+                ->color('primary'),
+                    ];
     }
 }

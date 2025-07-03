@@ -149,9 +149,9 @@ class TugasResource extends Resource
                     ->label('PIC'),
 
                 Tables\Columns\TextColumn::make('tenggat_waktu')
-                    ->label('Tenggat Waktu')
+                    ->label('Tanggal')
                     ->searchable()
-                    ->dateTime('d-m-Y H:i')
+                    ->dateTime('d-m-Y')
                     ->sortable()
                     ->color(fn ($record) => $record->warna_tenggat_waktu)
                     ->tooltip(fn ($record) => $record->tenggat_waktu->diffForHumans()),
