@@ -222,8 +222,15 @@ class TugasResource extends Resource
 
     Tables\Filters\Filter::make('tugasHariIni')
     ->label('Tugas Hari Ini')
-    ->query(fn ($query) => $query->whereDate('tenggat_waktu', \Carbon\Carbon::today()))
+    // --- Bagian ini yang diubah ---
+    ->query(function (\Illuminate\Database\Eloquent\Builder $query) {
+        $query->whereDate('tenggat_waktu', \Carbon\Carbon::today())
+              ->whereNotIn('status', ['selesai', 'dihentikan']);
+    })
+    // --- Akhir perubahan ---
     ->name('tugasHariIni') // ✅ WAJIB di Filament 3
+    ->toggle() // Opsional: agar filter bisa diaktifkan/dinonaktifkan manual
+    ->default(), 
 
                                        
             ])
