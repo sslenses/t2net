@@ -130,18 +130,28 @@ public function getWarnaSisaHariAttribute(): string
 }
 
 
-    protected static function booted(): void
-    {
-        static::creating(function ($model) {
-            if (empty($model->tugas_id) && !empty($model->jenis_order)) {
-                $model->tugas_id = static::generateNextId($model->jenis_order);
-            }
-        });
+    // app/Models/Tugas.php
 
-        static::saving(function (Tugas $tugas) {
+protected static function booted(): void
+{
+    static::creating(function ($model) {
+        if (empty($model->tugas_id) && !empty($model->jenis_order)) {
+            $model->tugas_id = static::generateNextId($model->jenis_order);
+        }
+    });
+
+    static::saving(function (Tugas $tugas) {
+        // --- LOGIKA BARU DI SINI ---
+        // Hanya terapkan logika jika status BUKAN 'selesai' DAN BUKAN 'dihentikan'
+        if (!in_array($tugas->status, ['selesai', 'dihentikan'])) {
+            // Pastikan tenggat_waktu ada dan sudah melewati waktu saat ini
+            // Menggunakan `isPast()` akan membandingkan dengan waktu saat ini
             if ($tugas->tenggat_waktu && $tugas->tenggat_waktu->isPast()) {
+                // Jika sudah lewat, set ke awal hari ini
                 $tugas->tenggat_waktu = now()->startOfDay();
             }
-        });
-    }
+        }
+        // --- AKHIR LOGIKA BARU ---
+    });
+}
 }
