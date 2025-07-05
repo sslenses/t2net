@@ -18,7 +18,7 @@ class TugasStats extends BaseWidget
                 ->url(TugasResource::getUrl('index') . '?tableFilters[tugasHariIni][enabled]=true&tableFilters[tugasHariIni][isActive]=true')
                 ->color('warning'),
 
-            Card::make('Pekerjaan Terlambat', Tugas::whereDate('tenggat_waktu', '<', now())->count())
+            Card::make('Pekerjaan Terlambat', Tugas::where('status', 'terlambat')->count())
                 // ->description('Melewati tenggat waktu')
                 ->icon('heroicon-o-exclamation-circle')
                 ->url(TugasResource::getUrl('index', [

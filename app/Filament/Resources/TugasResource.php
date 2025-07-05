@@ -2,6 +2,9 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TugasResource\Pages;
+use App\Filament\Exports\TugasExporter;
+use Filament\Tables\Actions\ExportAction;
+use Filament\Tables\Actions\ExportBulkAction;
 use App\Models\Tugas;
 use App\Models\User;
 use Carbon\Carbon;
@@ -108,26 +111,31 @@ class TugasResource extends Resource
             
                 Tables\Columns\TextColumn::make('label_order')
                     ->label('Order')
+                    ->toggleable()
                     // ->searchable()
                     // ->sortable()
                     ->hidden(),
                 
                 Tables\Columns\TextColumn::make('tugas_id')
                     ->label('ID')
+                    ->toggleable()
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('judul')
                     ->label('Task')
+                    ->toggleable()
                     ->label('Subjek') // Label sudah ada di form, mungkin ini duplikat
                     ->searchable(),
                     
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Status')
+                    ->toggleable()
                     ->searchable()
                     ->color(fn ($record) => $record->warna_status),
                     
                 Tables\Columns\BadgeColumn::make('prioritas')
                     ->label('Prio')
+                    ->toggleable()
                     ->searchable()
                     ->colors([
                         1 => 'gray',
@@ -139,6 +147,7 @@ class TugasResource extends Resource
 
                 Tables\Columns\BadgeColumn::make('kategori')
                     ->label('Kategori')
+                    ->toggleable()
                     ->color(fn (string $state): string => match ($state) {
                         'mendadak' => 'danger',
                         'terjadwal' => 'success',
@@ -146,10 +155,12 @@ class TugasResource extends Resource
                     }),
                 
                 Tables\Columns\TextColumn::make('penanggungJawab.name')
-                    ->label('PIC'),
+                    ->label('PIC')
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('tenggat_waktu')
                     ->label('Tanggal')
+                    ->toggleable()
                     ->searchable()
                     ->dateTime('d-m-Y')
                     ->sortable()
@@ -158,13 +169,15 @@ class TugasResource extends Resource
                 
                 Tables\Columns\TextColumn::make('sisa_hari')
                     ->label('Sisa Hari')
+                    ->toggleable()
                     ->sortable()
                     ->badge()
                     ->color(fn ($record) => $record->warna_sisa_hari),
                 
                 Tables\Columns\TextColumn::make('deskripsi')
                     ->searchable()
-                        ->label('Deskripsi'),
+                    ->toggleable()
+                    ->label('Deskripsi'),
                     ])
     
             ->filters([
@@ -216,12 +229,19 @@ class TugasResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                
+            ])
+            ->headerActions([
+                ExportAction::make()
+                    ->label('Ekspor Tugas')
+                    ->exporter(TugasExporter::class)
+                    ->color('primary'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+                ExportBulkAction::make()->exporter(TugasExporter::class)
+
             ]);
     }
 
