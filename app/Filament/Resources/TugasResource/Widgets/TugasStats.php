@@ -13,7 +13,12 @@ class TugasStats extends BaseWidget
     protected function getCards(): array
     {
         return [
-            Card::make('Pekerjaan Hari Ini', Tugas::whereDate('tenggat_waktu', Carbon::today())->count())
+            Card::make('Pekerjaan Hari Ini', Tugas::query() // Mulai dengan query()
+                ->whereDate('tenggat_waktu', Carbon::today())
+                // --- Tambahkan kondisi ini ---
+                ->whereNotIn('status', ['selesai', 'dihentikan'])
+                // --- Akhir kondisi tambahan ---
+                ->count()) // Kemudian panggil count()
                 ->icon('heroicon-o-calendar-days')
                 ->url(TugasResource::getUrl('index') . '?tableFilters[tugasHariIni][enabled]=true&tableFilters[tugasHariIni][isActive]=true')
                 ->color('warning'),
