@@ -88,37 +88,47 @@ class Tugas extends Model
     }
 
     public function getSisaHariAttribute(): string
-    {
-        $now = now()->startOfDay();
-        $tenggat = $this->tenggat_waktu?->copy()->startOfDay();
+{
+    $now = now()->startOfDay();
+    $tenggat = $this->tenggat_waktu?->copy()->startOfDay(); // Pastikan ini objek Carbon
 
-        if (!$tenggat) {
-            return '-';
-        }
+    if (!$tenggat) {
+        return '-';
+    }
 
-        $diff = $now->diffInDays($tenggat);
+    // Gunakan diffInDays dengan argumen kedua 'false' untuk mendapatkan nilai negatif jika sudah lewat
+    $diff = $now->diffInDays($tenggat, false);
 
+    if ($diff < 0) {
+        return "Terlambat " . abs($diff) . " hari"; // Contoh: Terlambat 1 hari
+    } elseif ($diff === 0) {
+        return "Hari ini";
+    } else {
         return "{$diff} hari lagi";
     }
+}
 
-    public function getWarnaSisaHariAttribute(): string
-    {
-        $now = now()->startOfDay();
-        $tenggat = $this->tenggat_waktu?->copy()->startOfDay();
+public function getWarnaSisaHariAttribute(): string
+{
+    $now = now()->startOfDay();
+    $tenggat = $this->tenggat_waktu?->copy()->startOfDay();
 
-        if (!$tenggat) {
-            return 'gray';
-        }
-
-        $diff = $now->diffInDays($tenggat, false);
-
-        return match (true) {
-            $diff < 1 => 'danger',
-            $diff === 1 => 'danger',
-            $diff <= 2 => 'warning',
-            default => 'success',
-        };
+    if (!$tenggat) {
+        return 'gray';
     }
+
+    // Gunakan diffInDays dengan argumen kedua 'false' untuk mendapatkan nilai negatif jika sudah lewat
+    $diff = $now->diffInDays($tenggat, false);
+
+    return match (true) {
+        $diff < 0 => 'danger', // Sudah lewat hari ini
+        $diff === 0 => 'warning', // Hari ini
+        $diff === 1 => 'orange', // Besok
+        $diff <= 3 => 'primary', // Dalam 3 hari ke depan
+        default => 'success', // Lebih dari 3 hari
+    };
+}
+
 
     protected static function booted(): void
     {
