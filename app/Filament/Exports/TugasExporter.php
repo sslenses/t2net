@@ -14,7 +14,7 @@ class TugasExporter extends Exporter
     public static function getColumns(): array
     {
         return [
-           ExportColumn::make('id')
+            ExportColumn::make('id')
                 ->label('ID'),
             ExportColumn::make('jenis_order')
                 ->label('Jenis Order'),
@@ -26,7 +26,6 @@ class TugasExporter extends Exporter
                 ->label('Tanggal Dibuat')
         ];
     }
-
     public static function getCompletedNotificationBody(Export $export): string
     {
         $body = 'Your tugas export has completed and ' . number_format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
@@ -34,7 +33,6 @@ class TugasExporter extends Exporter
         if ($failedRowsCount = $export->getFailedRowsCount()) {
             $body .= ' ' . number_format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
         }
-
         return $body;
     }
 }
