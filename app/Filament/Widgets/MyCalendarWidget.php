@@ -33,6 +33,8 @@ class MyCalendarWidget extends CalendarWidget
 
     protected bool $dateClickEnabled = true;
 
+    protected bool $eventClickEnabled = true;
+
     public function onDateClick(array $info = []): void
     {
         $date = Carbon::parse($info['dateStr'])->format('Y-m-d');
@@ -46,5 +48,19 @@ class MyCalendarWidget extends CalendarWidget
             ],
         ]));
         // --- AKHIR PERUBAHAN PENTING ---
+    }
+
+    public function onEventClick(array $info = [], ?string $action = null): void // <-- Tambahkan ", ?string $action = null" di sini
+    {
+        // Ambil tanggal mulai dari event yang diklik
+        $eventDate = Carbon::parse($info['event']['end'])->format('Y-m-d');
+
+        // Gunakan logika pengalihan yang sama persis seperti onDateClick
+        $this->redirect(TugasResource::getUrl('index', [
+            'tableSearch' => $eventDate,
+            'tableFilters' => [
+                'tugasHariIni' => false,
+            ],
+        ]));
     }
 }
