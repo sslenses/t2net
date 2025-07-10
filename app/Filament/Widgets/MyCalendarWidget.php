@@ -7,6 +7,7 @@ use App\Models\Tugas;   // Digunakan untuk CreateAction
 use Filament\Forms;
 use Filament\Support\RawJs;
 use Filament\Actions\CreateAction;
+use Carbon\Carbon; // Untuk memformat tanggal
 use App\Filament\Resources\TugasResource; // Import TugasResource untuk URL event
 use Guava\Calendar\Widgets\CalendarWidget;
 use Illuminate\Support\Collection;
@@ -22,23 +23,28 @@ class MyCalendarWidget extends CalendarWidget
     public function getEvents(array $fetchInfo = []): Collection | array
     {
         $events = MyEvent::query()
-                    // --- PERBAIKAN DI SINI: Gunakan 'tenggat_waktu' ---
-                    ->whereNotNull('tenggat_waktu')
-                    ->get();
+            // --- PERBAIKAN DI SINI: Gunakan 'tenggat_waktu' ---
+            ->whereNotNull('tenggat_waktu')
+            ->get();
 
         return $events;
     }
 
-    
+
     protected bool $dateClickEnabled = true;
 
     public function onDateClick(array $info = []): void
     {
-        $date = \Carbon\Carbon::parse($info['dateStr'])->format('Y-m-d');
+        $date = Carbon::parse($info['dateStr'])->format('Y-m-d');
 
+        // --- INI PERUBAHAN PENTINGNYA ---
+        // Dapatkan URL dasar resource tanpa parameter apapun
         $this->redirect(TugasResource::getUrl('index', [
-            'tableSearch' => $date,
+            'tableSearch' => $date, // Mengaktifkan pencarian tanggal
+            'tableFilters' => [
+                'tugasHariIni' => false, // <--- SECARA EKSPILSIT NONAKTIFKAN FILTER INI
+            ],
         ]));
+        // --- AKHIR PERUBAHAN PENTING ---
     }
-
 }

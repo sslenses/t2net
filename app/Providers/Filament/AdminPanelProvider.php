@@ -23,7 +23,7 @@ use App\Filament\Widgets\MyCalendarWidget;
 
 class AdminPanelProvider extends PanelProvider
 {
-    
+
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -42,7 +42,7 @@ class AdminPanelProvider extends PanelProvider
                 'warning' => Color::Amber,
                 'info' => Color::Sky,
                 'gray' => Color::Zinc,
-                ])
+            ])
             ->databaseNotifications()
             ->font('poppins')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

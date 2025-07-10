@@ -88,70 +88,61 @@ class Tugas extends Model
     }
 
     public function getSisaHariAttribute(): string
-{
-    $now = now()->startOfDay();
-    $tenggat = $this->tenggat_waktu?->copy()->startOfDay(); // Pastikan ini objek Carbon
+    {
+        $now = now()->startOfDay();
+        $tenggat = $this->tenggat_waktu?->copy()->startOfDay(); // Pastikan ini objek Carbon
 
-    if (!$tenggat) {
-        return '-';
-    }
-
-    // Gunakan diffInDays dengan argumen kedua 'false' untuk mendapatkan nilai negatif jika sudah lewat
-    $diff = $now->diffInDays($tenggat, false);
-
-    if ($diff < 0) {
-        return "Terlambat " . abs($diff) . " hari"; // Contoh: Terlambat 1 hari
-    } elseif ($diff === 0) {
-        return "Hari ini";
-    } else {
-        return "{$diff} hari lagi";
-    }
-}
-
-public function getWarnaSisaHariAttribute(): string
-{
-    $now = now()->startOfDay();
-    $tenggat = $this->tenggat_waktu?->copy()->startOfDay();
-
-    if (!$tenggat) {
-        return 'gray';
-    }
-
-    // Gunakan diffInDays dengan argumen kedua 'false' untuk mendapatkan nilai negatif jika sudah lewat
-    $diff = $now->diffInDays($tenggat, false);
-
-    return match (true) {
-        $diff < 0 => 'danger', // Sudah lewat hari ini
-        $diff === 0 => 'warning', // Hari ini
-        $diff === 1 => 'orange', // Besok
-        $diff <= 3 => 'primary', // Dalam 3 hari ke depan
-        default => 'success', // Lebih dari 3 hari
-    };
-}
-
-
-    // app/Models/Tugas.php
-
-protected static function booted(): void
-{
-    static::creating(function ($model) {
-        if (empty($model->tugas_id) && !empty($model->jenis_order)) {
-            $model->tugas_id = static::generateNextId($model->jenis_order);
+        if (!$tenggat) {
+            return '-';
         }
-    });
 
-    static::saving(function (Tugas $tugas) {
-        // --- LOGIKA BARU DI SINI ---
-        // Hanya terapkan logika jika status BUKAN 'selesai' DAN BUKAN 'dihentikan'
-        if (!in_array($tugas->status, ['selesai', 'dihentikan'])) {
-            // Pastikan tenggat_waktu ada dan sudah melewati waktu saat ini
-            // Menggunakan `isPast()` akan membandingkan dengan waktu saat ini
-            if ($tugas->tenggat_waktu && $tugas->tenggat_waktu->isPast()) {
-                // Jika sudah lewat, set ke awal hari ini
-                $tugas->tenggat_waktu = now()->startOfDay();
+        // Gunakan diffInDays dengan argumen kedua 'false' untuk mendapatkan nilai negatif jika sudah lewat
+        $diff = $now->diffInDays($tenggat, false);
+
+        if ($diff < 0) {
+            return "Terlambat " . abs($diff) . " hari"; // Contoh: Terlambat 1 hari
+        } elseif ($diff === 0) {
+            return "Hari ini";
+        } else {
+            return "{$diff} hari lagi";
+        }
+    }
+
+    public function getWarnaSisaHariAttribute(): string
+    {
+        $now = now()->startOfDay();
+        $tenggat = $this->tenggat_waktu?->copy()->startOfDay();
+
+        if (!$tenggat) {
+            return 'gray';
+        }
+
+        // Gunakan diffInDays dengan argumen kedua 'false' untuk mendapatkan nilai negatif jika sudah lewat
+        $diff = $now->diffInDays($tenggat, false);
+
+        return match (true) {
+            $diff < 0 => 'danger', // Sudah lewat hari ini
+            $diff === 0 => 'warning', // Hari ini
+            $diff === 1 => 'orange', // Besok
+            $diff <= 3 => 'primary', // Dalam 3 hari ke depan
+            default => 'success', // Lebih dari 3 hari
+        };
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function ($model) {
+            if (empty($model->tugas_id) && !empty($model->jenis_order)) {
+                $model->tugas_id = static::generateNextId($model->jenis_order);
             }
-        }
-        // --- AKHIR LOGIKA BARU ---
-    });
-}
+        });
+
+        static::saving(function (Tugas $tugas) {
+            if (!in_array($tugas->status, ['selesai', 'dihentikan'])) {
+                if ($tugas->tenggat_waktu && $tugas->tenggat_waktu->isPast()) {
+                    $tugas->tenggat_waktu = now()->startOfDay();
+                }
+            }
+        });
+    }
 }
