@@ -138,7 +138,7 @@ class Tugas extends Model
         });
 
         static::saving(function (Tugas $tugas) {
-            if (!in_array($tugas->status, ['selesai', 'dihentikan'])) {
+            if (!in_array($tugas->status, ['selesai', 'dibatalkan', 'dihentikan'])) {
                 if ($tugas->tenggat_waktu && $tugas->tenggat_waktu->isPast()) {
                     $tugas->tenggat_waktu = now()->startOfDay();
                 }

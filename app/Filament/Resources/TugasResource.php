@@ -223,7 +223,7 @@ class TugasResource extends Resource
                     // --- Bagian ini yang diubah ---
                     ->query(function (\Illuminate\Database\Eloquent\Builder $query) {
                         $query->whereDate('tenggat_waktu', \Carbon\Carbon::today())
-                            ->whereNotIn('status', ['selesai', 'dihentikan']);
+                            ->whereNotIn('status', ['selesai', 'dihentikan', 'dibatalkan']); // Hanya yang belum selesai
                     })
                     // --- Akhir perubahan ---
                     ->name('tugasHariIni') // ✅ WAJIB di Filament 3

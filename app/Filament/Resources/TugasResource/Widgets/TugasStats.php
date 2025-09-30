@@ -41,7 +41,9 @@ class TugasStats extends BaseWidget
 
 
         return [
-            Card::make('Pekerjaan Hari Ini', $pekerjaanAktifQuery->clone()->whereDate('tenggat_waktu', today())->count())
+            Card::make('Pekerjaan Hari Ini', $pekerjaanAktifQuery->clone()->whereDate('tenggat_waktu', today())
+                ->whereNotIn('status', ['selesai', 'dihentikan', 'dibatalkan'])
+                ->count())
                 ->icon('heroicon-o-calendar-days')
                 ->chart($dataPekerjaanAktif['data'])
                 ->url(TugasResource::getUrl('index', [

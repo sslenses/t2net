@@ -28,14 +28,14 @@ return new class extends Migration
 
             // Status ENUM dalam huruf kecil
             $table->enum('status', [
-                '-', 
-                'review', 
-                'proses', 
-                'segera', 
-                'terlambat', 
-                'selesai', 
-                'dihentikan', 
-                'dibatalkan'
+                '-',
+                'review',
+                'proses',
+                'segera',
+                'terlambat',
+                'selesai',
+                'dihentikan',
+                'dibatalkan',
             ])->default('-');
 
             // Tenggat waktu bisa null
@@ -49,10 +49,10 @@ return new class extends Migration
 
             // ✅ Tambahan kolom jenis_order
             $table->enum('jenis_order', [
-                'psb', 
-                'survey', 
-                'pengecekan error', 
-                'request', 
+                'psb',
+                'survey',
+                'pengecekan error',
+                'request',
                 'lain-lain'
             ])->nullable();
 
